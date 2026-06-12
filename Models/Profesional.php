@@ -12,13 +12,21 @@ class Profesional {
 
     // Obtener todos los profesionales
     public function getAll() {
-        $stmt = $this->pdo->query("SELECT * FROM {$this->table}");
-        return $stmt->fetchAll();
+    $stmt = $this->pdo->query("
+        SELECT p.id, u.nombre, u.apellido, u.email, p.especialidad, p.descripcion
+        FROM {$this->table} p
+        INNER JOIN users u ON p.id = u.id
+    ");
+    return $stmt->fetchAll();
     }
 
-    // Obtener un profesional por ID
     public function getById($id) {
-        $stmt = $this->pdo->prepare("SELECT * FROM {$this->table} WHERE id = ?");
+        $stmt = $this->pdo->prepare("
+            SELECT p.id, u.nombre, u.apellido, u.email, p.especialidad, p.descripcion
+            FROM {$this->table} p
+            INNER JOIN users u ON p.id = u.id
+            WHERE p.id = ?
+        ");
         $stmt->execute([$id]);
         return $stmt->fetch();
     }

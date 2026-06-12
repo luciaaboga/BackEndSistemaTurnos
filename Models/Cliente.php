@@ -12,13 +12,22 @@ class Cliente {
 
     // Obtener todos los clientes
     public function getAll() {
-        $stmt = $this->pdo->query("SELECT * FROM {$this->table}");
+        $stmt = $this->pdo->query("
+            SELECT c.id, u.nombre, u.apellido, u.email, u.dni, c.telefono
+            FROM {$this->table} c
+            INNER JOIN users u ON c.id = u.id
+        ");
         return $stmt->fetchAll();
     }
 
     // Obtener un cliente por ID
     public function getById($id) {
-        $stmt = $this->pdo->prepare("SELECT * FROM {$this->table} WHERE id = ?");
+        $stmt = $this->pdo->prepare("
+            SELECT c.id, u.nombre, u.apellido, u.email, u.dni, c.telefono
+            FROM {$this->table} c
+            INNER JOIN users u ON c.id = u.id
+            WHERE c.id = ?
+        ");
         $stmt->execute([$id]);
         return $stmt->fetch();
     }
