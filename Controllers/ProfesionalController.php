@@ -8,28 +8,79 @@ class ProfesionalController {
         $this->model = new Profesional();
     }
 
-    // Obtener todos los profesionales (GET)
     public function getAll() {
-        $profesionales = $this->model->getAll();
         return [
             'status' => 'success',
-            'data' => $profesionales
+            'data' => $this->model->getAll()
         ];
     }
 
-    // Obtener un profesional por ID (GET)
     public function getById($id) {
         $profesional = $this->model->getById($id);
         if (!$profesional) {
-            return [
-                'status' => 'error',
-                'message' => 'Profesional no encontrado'
-            ];
+            return ['status' => 'error', 'message' => 'Profesional no encontrado'];
         }
-        return [
-            'status' => 'success',
-            'data' => $profesional
-        ];
+        return ['status' => 'success', 'data' => $profesional];
+    }
+
+    public function create($data) {
+        // Validar campos requeridos
+        $requeridos = ['nombre', 'apellido', 'dni', 'email', 'password', 'especialidad'];
+        foreach ($requeridos as $campo) {
+            if (empty($data[$campo])) {
+                http_response_code(400);
+                return ['status' => 'error', 'message' => "El campo '$campo' es requerido"];
+            }
+        }
+
+        try {
+            $profesional = $this->model->create($data);
+            http_response_code(201);
+            return ['status' => 'success', 'data' => $profesional];
+        } catch (Exception $e) {
+            http_response_code(500);
+            return ['status' => 'error', 'message' => $e->getMessage()];
+        }
+    }
+
+    public function update($id, $data) {
+        $existente = $this->model->getById($id);
+        if (!$existente) {
+            http_response_code(404);
+            return ['status' => 'error', 'message' => 'Profesional no encontrado'];
+        }
+
+        $requeridos = ['nombre', 'apellido', 'dni', 'email', 'especialidad'];
+        foreach ($requeridos as $campo) {
+            if (empty($data[$campo])) {
+                http_response_code(400);
+                return ['status' => 'error', 'message' => "El campo '$campo' es requerido"];
+            }
+        }
+
+        try {
+            $profesional = $this->model->update($id, $data);
+            return ['status' => 'success', 'data' => $profesional];
+        } catch (Exception $e) {
+            http_response_code(500);
+            return ['status' => 'error', 'message' => $e->getMessage()];
+        }
+    }
+
+    public function delete($id) {
+        $existente = $this->model->getById($id);
+        if (!$existente) {
+            http_response_code(404);
+            return ['status' => 'error', 'message' => 'Profesional no encontrado'];
+        }
+
+        try {
+            $this->model->delete($id);
+            return ['status' => 'success', 'message' => 'Profesional eliminado correctamente'];
+        } catch (Exception $e) {
+            http_response_code(500);
+            return ['status' => 'error', 'message' => $e->getMessage()];
+        }
     }
 }
 ?>

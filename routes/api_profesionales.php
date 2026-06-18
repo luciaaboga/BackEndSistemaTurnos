@@ -1,16 +1,19 @@
 <?php
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json");
-header("Access-Control-Allow-Methods: GET, OPTIONS");
+header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
+
+// Preflight CORS
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit;
+}
 
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../controllers/ProfesionalController.php';
 
-// Instanciar controlador
 $profesionalController = new ProfesionalController();
-
-// Manejar solicitudes
 $method = $_SERVER['REQUEST_METHOD'];
 $id = $_GET['id'] ?? null;
 
@@ -24,13 +27,36 @@ if ($method === 'GET') {
     exit;
 }
 
-// Manejo de OPTIONS para CORS
-if ($method === 'OPTIONS') {
-    http_response_code(200);
+if ($method === 'POST') {
+    $data = json_decode(file_get_contents('php://input'), true);
+    $response = $profesionalController->create($data);
+    echo json_encode($response);
     exit;
 }
 
-// Método no permitido
+if ($method === 'PUT') {
+    if (!$id) {
+        http_response_code(400);
+        echo json_encode(['status' => 'error', 'message' => 'ID requerido']);
+        exit;
+    }
+    $data = json_decode(file_get_contents('php://input'), true);
+    $response = $profesionalController->update($id, $data);
+    echo json_encode($response);
+    exit;
+}
+
+if ($method === 'DELETE') {
+    if (!$id) {
+        http_response_code(400);
+        echo json_encode(['status' => 'error', 'message' => 'ID requerido']);
+        exit;
+    }
+    $response = $profesionalController->delete($id);
+    echo json_encode($response);
+    exit;
+}
+
 http_response_code(405);
 echo json_encode(['status' => 'error', 'message' => 'Método no permitido']);
 ?>
