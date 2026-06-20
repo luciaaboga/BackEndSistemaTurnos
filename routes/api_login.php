@@ -1,7 +1,7 @@
 <?php
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json");
-header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+header("Access-Control-Allow-Methods: POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
@@ -10,25 +10,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 require_once __DIR__ . '/../config/database.php';
-require_once __DIR__ . '/../controllers/ClienteController.php';
+require_once __DIR__ . '/../controllers/UserController.php';
 
-$clienteController = new ClienteController();
+$userController = new UserController();
 $method = $_SERVER['REQUEST_METHOD'];
-$id = $_GET['id'] ?? null;
-
-if ($method === 'GET') {
-    if ($id) {
-        $response = $clienteController->getById($id);
-    } else {
-        $response = $clienteController->getAll();
-    }
-    echo json_encode($response);
-    exit;
-}
 
 if ($method === 'POST') {
     $data = json_decode(file_get_contents('php://input'), true);
-    $response = $clienteController->create($data);
+    $response = $userController->login($data);
     echo json_encode($response);
     exit;
 }
