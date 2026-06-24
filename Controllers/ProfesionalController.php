@@ -24,8 +24,8 @@ class ProfesionalController {
     }
 
     public function create($data) {
-        // Validar campos requeridos
-        $requeridos = ['nombre', 'apellido', 'dni', 'email', 'password', 'especialidad'];
+        // especialidad_ids es opcional (puede no tener especialidades al crear)
+        $requeridos = ['nombre', 'apellido', 'dni', 'email', 'password'];
         foreach ($requeridos as $campo) {
             if (empty($data[$campo])) {
                 http_response_code(400);
@@ -50,7 +50,7 @@ class ProfesionalController {
             return ['status' => 'error', 'message' => 'Profesional no encontrado'];
         }
 
-        $requeridos = ['nombre', 'apellido', 'dni', 'email', 'especialidad'];
+        $requeridos = ['nombre', 'apellido', 'dni', 'email'];
         foreach ($requeridos as $campo) {
             if (empty($data[$campo])) {
                 http_response_code(400);
